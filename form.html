@@ -221,7 +221,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             </div>
         </div>
     </section>
-    <!-- Contact Section -->
     <section id="contact">
         <div class="container">
             <div class="row">
@@ -232,58 +231,94 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             </div>
             <div class="row">
                 <div class="col-lg-12">
-                    <form id="input-Form" action="" method="POST" target="no-target">
                         <div class="row">
+                            <form id="gform" method="POST">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <input type="text" class="form-control" placeholder="Your Name *" id="input-q1" required data-validation-required-message="Please enter your name." name="q1">
+                                    <input type="text" class="form-control" placeholder="Your Name *" id="fullName" required data-validation-required-message="Please enter your name." name="fullName">
                                     <p class="help-block text-danger"></p>
                                 </div>
                                 <div class="form-group">
-                                    <input type="email" class="form-control" placeholder="Your Email *" id="input-q2" required data-validation-required-message="Please enter your email address." name="q2">
+                                    <input type="email" class="form-control" placeholder="Your Email *" id="email" required data-validation-required-message="Please enter your email address." name="email">
                                     <p class="help-block text-danger"></p>
                                 </div>
                                 <div class="form-group">
-                                    <input type="tel" class="form-control" placeholder="Your Phone *" id="input-q3" required data-validation-required-message="Please enter your phone number." name="q3">
+                                    <input type="tel" class="form-control" placeholder="Your Phone *" id="phone" required data-validation-required-message="Please enter your phone number." name="phone">
                                     <p class="help-block text-danger"></p>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <textarea class="form-control" placeholder="Your Message *" id="input-q4" required data-validation-required-message="Please enter a message."name="q4"></textarea>
+                                    <textarea class="form-control" placeholder="Your Message *" id="message" required data-validation-required-message="Please enter a message."name="message"></textarea>
                                     <p class="help-block text-danger"></p>
                                 </div>
                             </div>
                             <div class="clearfix"></div>
                             <div class="col-lg-12 text-center">
-                                <div id="success" style="color: #3c763d;background-color: #dff0d8;border-color: #d6e9c6; 0;margin-bottom: 25px;border-radius: 10px;"></div>
                                 <button id="form-submit" type="submit" class="btn btn-xl">Send Message</button>
-
-                                <p id="input-feedback"></p>
-
-                    <iframe id="no-target" name="no-target" style="visibility:hidden;"></iframe>
-
-                    <script>
-                        $('#input-Form').one('submit',function(){
-                            var inputq1 = encodeURIComponent($('#input-q1').val());
-                            var inputq2 = encodeURIComponent($('#input-q2').val());
-                            var inputq3 = encodeURIComponent($('#input-q3').val());
-                            var inputq4 = encodeURIComponent($('#input-q4').val());
-                            var q1ID = "entry.614126036";
-                            var q2ID = "entry.1744537899";
-                            var q3ID = "entry.1767631083";
-                            var q4ID = "entry.37142858";
-                            var baseURL = 'https://docs.google.com/forms/d/1rsk_hWvx5vMCKuamFcmQov907EjnHgHSMsRTLiIIzf0/formResponse?';
-                            var submitRef = '&submit=Submit';
-                            var submitURL = (baseURL + q1ID + "=" + inputq1 + "&" + q2ID + "=" + inputq2 + "&" + q3ID + "=" + inputq3 + "&" + q4ID + "=" + inputq4 + submitRef);
-                            console.log(submitURL);
-                            $(this)[0].action=submitURL;
-                            $('#success').text('Thanks for reaching out. Someone will be in touch with your shortly.');
-                        });
-                    </script>
                             </div>
+                            </form>
+                            <div id="success" style="color: #3c763d;background-color: #dff0d8;border-color: #d6e9c6; 0;margin-bottom: 25px;border-radius: 10px;"></div>
                         </div>
-                    </form>
+                        <script data-cfasync="false" type="text/javascript">
+                        jQuery( document ).ready(function( $ ) {
+                            // variable to hold request
+                            var request;
+                            // bind to the submit event of our form
+                            $("#gform").submit(function(event){
+                                // abort any pending request
+                                if (request) {
+                                    request.abort();
+                                }
+                                // setup some local variables
+                                var $form = $(this);
+                                // let's select and cache all the fields
+                                var $inputs = $form.find("input, select, button, textarea");
+                                // serialize the data in the form
+                                var serializedData = $form.serialize();
+
+                                // let's disable the inputs for the duration of the ajax request
+                                // Note: we disable elements AFTER the form data has been serialized.
+                                // Disabled form elements will not be serialized.
+                                $inputs.prop("disabled", true);
+                                $('#suc').text('Sending data...');
+
+                                // fire off the request to /form.php
+                                request = $.ajax({
+                              url: "https://script.google.com/macros/s/AKfycbw9X5NSTv5VCC9ZtOwzhgC6R6QeWoAszvpZcLo_FNpZo6mIOd4/exec", 
+                                    type: "post",
+                                    data: serializedData
+                                });
+
+                                // callback handler that will be called on success
+                                request.done(function (response, textStatus, jqXHR){
+                                    // log a message to the console
+                              console.log(response, textStatus, jqXHR);
+                                    $('#success').html('<p style="padding:10px;text-align:center;">Thanks for reaching out. Someone will be in touch with your shortly.</p>');
+                                    console.log("Hooray, it worked!");
+                                });
+
+                                // callback handler that will be called on failure
+                                request.fail(function (jqXHR, textStatus, errorThrown){
+                                    // log the error to the console
+                                    console.error(
+                                        "The following error occured: "+
+                                        textStatus, errorThrown
+                                    );
+                                });
+
+                                // callback handler that will be called regardless
+                                // if the request failed or succeeded
+                                request.always(function () {
+                                    // reenable the inputs
+                                    $inputs.prop("disabled", false);
+                                });
+
+                                // prevent default posting of form
+                                event.preventDefault();
+                            });
+                        });
+                        </script>
                 </div>
             </div>
         </div>
